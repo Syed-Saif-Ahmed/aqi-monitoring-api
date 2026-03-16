@@ -1,0 +1,33 @@
+environment:
+  name: "dev"
+
+server:
+  host: "0.0.0.0"
+  port: 8003
+
+external_services:
+  waqi:
+    base_url: "https://api.waqi.info"
+    endpoints:
+      city_feed: "/feed/{city}/"
+      geo_feed: "/feed/geo:{lat};{lon}/"
+    token: "26620ed2cc9ac76947915e2272ec44c9a01b059d"
+
+openweather:
+  base_url: "http://api.openweathermap.org"
+  endpoints:
+    geo: "/geo/1.0/direct"
+  appid: "d8e5e24a05cf270d11b3672957f8a62c-e"
+
+security:
+    client_id: "process-api"
+    client_secret: "process-secret"
+    description: "Process API access to System API"
+
+timeouts:
+  external_call_seconds: 5
+
+http:
+  retry:
+    max_attempts: 1
+     

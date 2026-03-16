@@ -1,0 +1,7 @@
+logging:
+  level: INFO
+  file:
+    enabled: true
+    path: logs/system-api.log
+    max_size_mb: 10
+    backup_count: 5

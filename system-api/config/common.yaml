@@ -1,0 +1,22 @@
+app:
+  name: "aqi-system-api"
+  layer: "system"
+  version: "1.0.0"
+
+http:
+  connect_timeout_seconds: 3
+  read_timeout_seconds: 5
+  retry:
+    enabled: true
+    max_attempts: 3
+    backoff_ms: 300
+
+security:
+  auth_type: "client_credentials"
+  header_names:
+    client_id: "X-Client-ID"
+    client_secret: "X-Client-Secret"
+logging:
+  level: INFO
+  file:
+    enabled: false
