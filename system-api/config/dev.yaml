@@ -17,7 +17,7 @@ openweather:
   base_url: "http://api.openweathermap.org"
   endpoints:
     geo: "/geo/1.0/direct"
-  appid: "d8e5e24a05cf270d11b3672957f8a62c-e"
+  appid: "d8e5e24a05cf270d11b3672957f8a62c"
 
 security:
     client_id: "process-api"
