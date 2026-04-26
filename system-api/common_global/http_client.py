@@ -115,7 +115,7 @@ def delete(
         url=url,
         headers=headers,
         params=params,
-        timeout=timeout,
+        timeout=timeout or _default_timeout(),
         json=json,
     )
 

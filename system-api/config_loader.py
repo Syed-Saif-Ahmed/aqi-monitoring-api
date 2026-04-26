@@ -42,7 +42,7 @@ def _read_yaml(file_path: str) -> Dict[str, Any]:
     except FileNotFoundError:
         raise RuntimeError(f"Configuration file not found: {file_path}")
     except yaml.YAMLError as e:
-        raise(f"Invalid YAML in config file: {file_path} Error: {e}")
+        raise RuntimeError(f"Invalid YAML in config file: {file_path} Error: {e}")
     
 @lru_cache(maxsize=1)
 def load_config() -> Dict[str, Any]:
