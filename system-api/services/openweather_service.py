@@ -58,28 +58,11 @@ def get_coordinates_by_city(city: str) -> Dict[str, float]:
     except Exception as exc:
         logger.exception("Openweather API call failed")
         payload = response.json()
-        raise _openweather_unavailable_error() from exc
+        raise _openweather_unavailable_error(exc) from exc
     
 
     return _handle_openweather_response(response)
 
-    payload = response.json()
-    if not payload:
-        logger.warning(
-            "City Not found in openWeather",
-            extra={
-                "city":city,
-            },
-        )
-        raise BaseAPIException(
-            message=f"city '{city}' not found",
-            status_code=HTTP_404_NOT_FOUND,
-            error_code=ERROR_CITY_NOT_FOUND,
-        )
-    return {
-        "lat": payload[0]["lat"],
-        "lon": payload[0]["lon"],
-    }
 
 # Internal Helpers
 

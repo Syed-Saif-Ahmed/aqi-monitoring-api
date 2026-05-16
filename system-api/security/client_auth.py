@@ -51,7 +51,6 @@ async def security_middleware(request: Request, call_next):
                 "correlation_id": request.state.correlation_id
             }
         )
-        raise HTTPException(status_code=401, detail="Invalid client credentials")
 
     # -----------------------------------------------------
     # Continue Request

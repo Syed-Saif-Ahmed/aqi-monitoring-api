@@ -53,7 +53,7 @@ def get_aqi_by_city(city: str) -> Dict[str,Any]:
     except Exception as exc:
         logger.exception("WAQI city API call failed")
         payload = response.json()
-        raise _waqi_unavailable_error(payload) from exc
+        raise _waqi_unavailable_error(exc) from exc
     
     return _handle_waqi_response(response)
 
@@ -93,18 +93,20 @@ def get_aqi_by_geo(lat: float, lon: float) -> Dict[str, Any]:
 def _handle_waqi_response(response) -> Dict[str, Any]:
     """validate and extracts WAQi response"""
 
+    payload = response.json()
+
     if response.status_code != 200:
         logger.error(
             "WAQI API returned non-200 response",
             extra={
                 "status": response.status_code,
+                "message":payload,
             },
         )
         raise _waqi_unavailable_error(payload)
-    
-    payload = response.json()
 
-    if payload.get("status") != "ok":
+
+    elif payload.get("status") != "ok":
         logger.warning(
             "WAQI API returned error status",
             extra=payload,
@@ -118,31 +120,32 @@ def _waqi_unavailable_error(payload):
     Docstring for _waqi_unavailable_error
     Standard WAQI unavailable error 
     """
-    if payload.get("data") == "Invalid key":
+    if payload.get("status") is not None and payload.get("status") == "error":
+        if payload.get("data") == "Invalid key":
+            return BaseAPIException(
+                message="Authentication failed: Invalid token",
+                status_code=HTTP_401_UNAUTHORIZED,
+                error_code=INVALID_AUTHENTICATION_TOKEN,
+                details=payload,
+            )
+        elif payload.get("data") == "Unknown city":
+            return BaseAPIException(
+                message="Resource Not Found",
+                status_code=HTTP_404_NOT_FOUND,
+                error_code=ERROR_CITY_NOT_FOUND,
+                details=payload,
+            )
+        elif payload.get("data") == "Over quota":
+            return BaseAPIException(
+                message="You have exceeded your request quota",
+                status_code=HTTP_403_FORBIDDEN,
+                error_code=RESOURCE_EXHAUSTED,
+                details=payload,
+            )
         return BaseAPIException(
-            message="Authentication failed: Invalid token",
-            status_code=HTTP_401_UNAUTHORIZED,
-            error_code=INVALID_AUTHENTICATION_TOKEN,
+            message="WAQI service is currently unavaliable",
+            status_code=HTTP_503_SERVICE_UNAVAILABLE,
+            error_code=ERROR_WAQI_DOWN,
             details=payload,
-        )
-    elif payload.get("data") == "Unknown city":
-        return BaseAPIException(
-            message="Resource Not Found",
-            status_code=HTTP_404_NOT_FOUND,
-            error_code=ERROR_CITY_NOT_FOUND,
-            details=payload,
-        )
-    elif payload.get("data") == "Over quota":
-        return BaseAPIException(
-            message="You have exceeded your request quota",
-            status_code=HTTP_403_FORBIDDEN,
-            error_code=RESOURCE_EXHAUSTED,
-            details=payload,
-        )
-    return BaseAPIException(
-        message="WAQI service is currently unavaliable",
-        status_code=HTTP_503_SERVICE_UNAVAILABLE,
-        error_code=ERROR_WAQI_DOWN,
-        details=payload,
 
-    )
+        )
