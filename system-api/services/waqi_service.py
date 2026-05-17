@@ -128,7 +128,7 @@ def _waqi_unavailable_error(payload):
                 error_code=INVALID_AUTHENTICATION_TOKEN,
                 details=payload,
             )
-        elif payload.get("data") == "Unknown city":
+        elif payload.get("data") == "Unknown station":
             return BaseAPIException(
                 message="Resource Not Found",
                 status_code=HTTP_404_NOT_FOUND,
